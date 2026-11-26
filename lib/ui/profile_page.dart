@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/source.dart';
 import '../core/store.dart';
+import 'downloads_page.dart';
 import 'favorites_page.dart';
 import 'history_page.dart';
 import 'settings_page.dart';
@@ -72,6 +73,18 @@ class ProfilePage extends StatelessWidget {
                         MaterialPageRoute<void>(
                           builder: (_) =>
                               HistoryPage(store: store, sources: sources),
+                        ),
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.download_outlined),
+                      title: const Text('下载'),
+                      subtitle: const Text('多连接分片下载与离线文件'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const DownloadsPage(),
                         ),
                       ),
                     ),

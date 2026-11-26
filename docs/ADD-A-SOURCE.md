@@ -63,6 +63,7 @@ List<ContentSource> get _sources => [
 ## 约定与注意
 
 - `fetchFeed` / `fetchDetail` 里自己处理超时（推荐 10–15 秒）并把异常往上抛，界面会显示原始错误；
+- `images` / `episodes` 里的地址必须是可直连的媒体 URL（下载器按 HTTP Range 拉取）；
 - `id` 必须稳定且全局唯一到「这个源内部」，收藏按 `sourceId/itemId` 存；
 - 不要在源里写死 UI 逻辑（弹窗、导航），它是纯数据层；
 - 数据来源必须是你拥有版权或已获授权的，不要抓第三方平台私有接口或绕过付费。

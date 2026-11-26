@@ -34,6 +34,7 @@ class _PlayerPageState extends State<PlayerPage> {
   VideoPlayerController? _controller;
   String? _error;
   Timer? _ticker;
+  double _speed = 1.0;
 
   @override
   void initState() {
@@ -95,6 +96,26 @@ class _PlayerPageState extends State<PlayerPage> {
       appBar: AppBar(
         title: Text(widget.title, overflow: TextOverflow.ellipsis),
         actions: [
+          PopupMenuButton<double>(
+            tooltip: '播放速度',
+            initialValue: _speed,
+            onSelected: (value) {
+              setState(() => _speed = value);
+              _controller?.setPlaybackSpeed(value);
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem(value: 0.5, child: Text('0.5x')),
+              PopupMenuItem(value: 0.75, child: Text('0.75x')),
+              PopupMenuItem(value: 1.0, child: Text('1x')),
+              PopupMenuItem(value: 1.25, child: Text('1.25x')),
+              PopupMenuItem(value: 1.5, child: Text('1.5x')),
+              PopupMenuItem(value: 2.0, child: Text('2x')),
+            ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Center(child: Text('$_speed x')),
+            ),
+          ),
           IconButton(
             tooltip: '用外部播放器打开',
             onPressed: _openExternally,

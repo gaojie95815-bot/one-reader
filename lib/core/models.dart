@@ -1,24 +1,25 @@
 // 纯 Dart 数据模型：刻意不 import flutter，方便在命令行和单元测试里直接跑。
 import 'dart:convert';
 
-/// 内容类型：图文 / 视频 / 电台。
-enum ContentKind { article, video, audio }
+/// 内容形态：对齐 iOS 版的图文 / 阅读 / 影视 / 电台 / 写真 / 漫画。
+enum ContentKind { article, reading, video, audio, gallery, comic }
 
-ContentKind parseKind(String? raw) {
-  switch (raw) {
-    case 'video':
-      return ContentKind.video;
-    case 'audio':
-      return ContentKind.audio;
-    default:
-      return ContentKind.article;
-  }
-}
+ContentKind parseKind(String? raw) => switch (raw) {
+  'video' => ContentKind.video,
+  'audio' => ContentKind.audio,
+  'reading' || 'book' || 'read' => ContentKind.reading,
+  'gallery' || 'photo' || 'photos' => ContentKind.gallery,
+  'comic' || 'manga' => ContentKind.comic,
+  _ => ContentKind.article,
+};
 
 String kindToWire(ContentKind kind) => switch (kind) {
   ContentKind.article => 'article',
+  ContentKind.reading => 'reading',
   ContentKind.video => 'video',
   ContentKind.audio => 'audio',
+  ContentKind.gallery => 'gallery',
+  ContentKind.comic => 'comic',
 };
 
 /// 列表里的一条内容。
@@ -63,24 +64,99 @@ class ContentItem {
 
   String get kindLabel => switch (kind) {
     ContentKind.article => '图文',
-    ContentKind.video => '视频',
+    ContentKind.reading => '阅读',
+    ContentKind.video => '影视',
     ContentKind.audio => '电台',
+    ContentKind.gallery => '写真',
+    ContentKind.comic => '漫画',
   };
 }
 
-/// 详情页需要的正文与媒体地址。
+/// 剧集 / 分集（影视与电台共用）。
+class Episode {
+  const Episode({
+    required this.title,
+    required this.mediaUrl,
+    this.durationLabel,
+  });
+
+  final String title;
+  final String mediaUrl;
+  final String? durationLabel;
+
+  factory Episode.fromJson(Map<String, dynamic> json) => Episode(
+    title: (json['title'] as String?) ?? '',
+    mediaUrl: (json['media_url'] as String?) ?? '',
+    durationLabel: json['duration'] as String?,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'media_url': mediaUrl,
+    if (durationLabel != null) 'duration': durationLabel,
+  };
+}
+
+/// 评论：示例数据里给几条，用户也能在本机追加。
+class Comment {
+  const Comment({
+    required this.id,
+    required this.author,
+    required this.content,
+    this.likes = 0,
+    this.createdAt = 0,
+  });
+
+  final String id;
+  final String author;
+  final String content;
+  final int likes;
+
+  /// 毫秒时间戳；0 表示示例数据。
+  final int createdAt;
+
+  factory Comment.fromJson(Map<String, dynamic> json) => Comment(
+    id: '${json['id'] ?? ''}',
+    author: (json['author'] as String?) ?? '匿名',
+    content: (json['content'] as String?) ?? '',
+    likes: (json['likes'] as num?)?.toInt() ?? 0,
+    createdAt: (json['created_at'] as num?)?.toInt() ?? 0,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'author': author,
+    'content': content,
+    'likes': likes,
+    'created_at': createdAt,
+  };
+}
+
+/// 详情页需要的正文、媒体、图集、剧集与评论。
 class ContentDetail {
   const ContentDetail({
     required this.item,
     this.body = '',
     this.mediaUrl,
     this.tags = const [],
+    this.images = const [],
+    this.episodes = const [],
+    this.comments = const [],
   });
 
   final ContentItem item;
   final String body;
   final String? mediaUrl;
   final List<String> tags;
+
+  /// 写真 / 漫画的图片列表。
+  final List<String> images;
+
+  /// 影视 / 电台的分集。
+  final List<Episode> episodes;
+
+  /// 示例评论（用户评论另外存在本地）。
+  final List<Comment> comments;
 
   factory ContentDetail.fromJson(Map<String, dynamic> json) {
     final rawItem = json['item'];
@@ -96,6 +172,18 @@ class ContentDetail {
           .map((e) => '$e')
           .where((e) => e.isNotEmpty)
           .toList(growable: false),
+      images: ((json['images'] as List?) ?? const [])
+          .map((e) => '$e')
+          .where((e) => e.isNotEmpty)
+          .toList(growable: false),
+      episodes: ((json['episodes'] as List?) ?? const [])
+          .whereType<Map<Object?, Object?>>()
+          .map((e) => Episode.fromJson(e.cast<String, dynamic>()))
+          .toList(growable: false),
+      comments: ((json['comments'] as List?) ?? const [])
+          .whereType<Map<Object?, Object?>>()
+          .map((e) => Comment.fromJson(e.cast<String, dynamic>()))
+          .toList(growable: false),
     );
   }
 
@@ -104,6 +192,11 @@ class ContentDetail {
     'body': body,
     if (mediaUrl != null) 'media_url': mediaUrl,
     if (tags.isNotEmpty) 'tags': tags,
+    if (images.isNotEmpty) 'images': images,
+    if (episodes.isNotEmpty)
+      'episodes': episodes.map((e) => e.toJson()).toList(),
+    if (comments.isNotEmpty)
+      'comments': comments.map((e) => e.toJson()).toList(),
   };
 }
 

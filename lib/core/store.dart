@@ -41,6 +41,7 @@ class AppStore extends ChangeNotifier {
   static const _kTheme = 'settings.themeMode';
   static const _kFavorites = 'favorites.v1';
   static const _kProgress = 'progress.v1';
+  static const _kComments = 'comments.v1';
 
   static const defaultBaseUrl = 'http://10.0.2.2:8787';
 
@@ -50,6 +51,7 @@ class AppStore extends ChangeNotifier {
   final SharedPreferences _prefs;
   final Map<String, FavoriteEntry> _favorites = {};
   final Map<String, PlayProgress> _progress = {};
+  final Map<String, List<Comment>> _comments = {};
 
   String sourceId = 'demo';
   String httpBaseUrl = defaultBaseUrl;
@@ -75,6 +77,7 @@ class AppStore extends ChangeNotifier {
       final entry = PlayProgress.fromJson(json);
       store._progress[entry.key] = entry;
     });
+    _restoreComments(prefs, store);
     return store;
   }
 
@@ -94,6 +97,35 @@ class AppStore extends ChangeNotifier {
     } catch (_) {
       // 数据损坏就当作空，不影响启动。
     }
+  }
+
+  // ---------------------------------------------------------------- 评论
+
+  /// 本机追加的评论（示例评论在详情数据里，两者在界面上合并）。
+  List<Comment> localComments(String sourceId, String itemId) =>
+      List.unmodifiable(_comments['$sourceId/$itemId'] ?? const <Comment>[]);
+
+  Future<void> addComment(
+    String sourceId,
+    String itemId,
+    String content, {
+    String author = '我',
+  }) async {
+    final trimmed = content.trim();
+    if (trimmed.isEmpty) return;
+    final key = '$sourceId/$itemId';
+    final list = _comments.putIfAbsent(key, () => <Comment>[]);
+    list.insert(
+      0,
+      Comment(
+        id: 'local-${DateTime.now().microsecondsSinceEpoch}',
+        author: author,
+        content: trimmed,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
+    notifyListeners();
+    await _persistComments();
   }
 
   // ---------------------------------------------------------------- 收藏
@@ -204,6 +236,38 @@ class AppStore extends ChangeNotifier {
       ThemeMode.dark => 'dark',
       ThemeMode.system => 'system',
     });
+  }
+
+  static void _restoreComments(SharedPreferences prefs, AppStore store) {
+    final raw = prefs.getString(_kComments);
+    if (raw == null) return;
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      decoded.forEach((key, value) {
+        if (value is List) {
+          final list = <Comment>[];
+          for (final item in value) {
+            if (item is Map<Object?, Object?>) {
+              list.add(Comment.fromJson(item.cast<String, dynamic>()));
+            }
+          }
+          if (list.isNotEmpty) store._comments[key] = list;
+        }
+      });
+    } catch (_) {
+      // 数据损坏就当作空。
+    }
+  }
+
+  Future<void> _persistComments() async {
+    await _prefs.setString(
+      _kComments,
+      jsonEncode(
+        _comments.map(
+          (key, value) => MapEntry(key, value.map((e) => e.toJson()).toList()),
+        ),
+      ),
+    );
   }
 
   Future<void> _persistProgress() async {

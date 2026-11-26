@@ -72,6 +72,40 @@
       "category": "示例",
       "kind": "video",
       "duration": "0:07"
+    },
+    {
+      "id": "r1",
+      "title": "阅读：长文排版与字号控制",
+      "summary": "阅读模式按段落排版，字号可 14–26 之间调整。",
+      "cover_url": "https://picsum.photos/seed/onereader-r1/800/500",
+      "category": "阅读",
+      "kind": "reading",
+      "duration": "12 分钟"
+    },
+    {
+      "id": "g1",
+      "title": "写真：把图片浏览做成左右翻页",
+      "summary": "全屏 PageView + 双指缩放，对齐 iOS 版看图页。",
+      "cover_url": "https://picsum.photos/seed/onereader-g1/800/500",
+      "category": "写真",
+      "kind": "gallery"
+    },
+    {
+      "id": "c1",
+      "title": "漫画：纵向连续阅读",
+      "summary": "图片按宽度铺满，加载失败的单页单独提示。",
+      "cover_url": "https://picsum.photos/seed/onereader-c1/800/500",
+      "category": "漫画",
+      "kind": "comic"
+    },
+    {
+      "id": "v4",
+      "title": "影视：三集示例连载",
+      "summary": "剧集列表 + 续播 / 下载，对齐 iOS 版影视详情。",
+      "cover_url": "https://picsum.photos/seed/onereader-v4/800/500",
+      "category": "影视",
+      "kind": "video",
+      "duration": "3 集"
     }
   ],
   "details": {
@@ -90,6 +124,20 @@
         "Flutter",
         "练手",
         "开源"
+      ],
+      "comments": [
+        {
+          "id": "c-a1-1",
+          "author": "阿桐",
+          "content": "收藏了，回头照着搭一遍。",
+          "likes": 3
+        },
+        {
+          "id": "c-a1-2",
+          "author": "木子",
+          "content": "原来不用接口也能先跑通。",
+          "likes": 1
+        }
       ]
     },
     "a2": {
@@ -141,6 +189,14 @@
       "tags": [
         "视频",
         "video_player"
+      ],
+      "comments": [
+        {
+          "id": "c-v1-1",
+          "author": "小北",
+          "content": "续播和倍速都挺好用。",
+          "likes": 2
+        }
       ]
     },
     "v2": {
@@ -210,6 +266,108 @@
         "继续观看",
         "历史",
         "进度"
+      ]
+    },
+    "r1": {
+      "item": {
+        "id": "r1",
+        "title": "阅读：长文排版与字号控制",
+        "summary": "阅读模式按段落排版，字号可 14–26 之间调整。",
+        "cover_url": "https://picsum.photos/seed/onereader-r1/800/500",
+        "category": "阅读",
+        "kind": "reading",
+        "duration": "12 分钟"
+      },
+      "body": "阅读模式下，正文和标题分开排版，行高 1.8，字号默认 18。右上角两个按钮调整字号，范围 14–26，每次 2 号。\n\n为什么单独做一个页面而不是在详情页里加个开关？\n\n1. 阅读时会长时间停留，需要更大的屏占比；\n2. 字号是阅读页自己的状态，不影响详情页；\n3. 以后加「夜间模式 / 背景色 / 行距」也只需要改这一页。\n\n正文本身来自内容源的 body 字段，纯文本；如果要富文本，可以接入 markdown 渲染库。",
+      "tags": [
+        "阅读",
+        "排版",
+        "字号"
+      ],
+      "comments": [
+        {
+          "id": "c-r1-1",
+          "author": "老周",
+          "content": "字号能调这点好评。",
+          "likes": 1
+        }
+      ]
+    },
+    "g1": {
+      "item": {
+        "id": "g1",
+        "title": "写真：把图片浏览做成左右翻页",
+        "summary": "全屏 PageView + 双指缩放，对齐 iOS 版看图页。",
+        "cover_url": "https://picsum.photos/seed/onereader-g1/800/500",
+        "category": "写真",
+        "kind": "gallery"
+      },
+      "images": [
+        "https://picsum.photos/seed/onereader-g1-1/900/1200",
+        "https://picsum.photos/seed/onereader-g1-2/900/1200",
+        "https://picsum.photos/seed/onereader-g1-3/900/1200",
+        "https://picsum.photos/seed/onereader-g1-4/900/1200",
+        "https://picsum.photos/seed/onereader-g1-5/900/1200"
+      ],
+      "body": "写真页用 PageView 做左右翻页，每张图外面套 InteractiveViewer，支持双指缩放和拖动。\n\n页码显示在右上角，避免遮挡图片。图片加载中显示进度圈，失败显示占位图标，不会让整页崩掉。",
+      "tags": [
+        "写真",
+        "图集",
+        "翻页"
+      ]
+    },
+    "c1": {
+      "item": {
+        "id": "c1",
+        "title": "漫画：纵向连续阅读",
+        "summary": "图片按宽度铺满，加载失败的单页单独提示。",
+        "cover_url": "https://picsum.photos/seed/onereader-c1/800/500",
+        "category": "漫画",
+        "kind": "comic"
+      },
+      "images": [
+        "https://picsum.photos/seed/onereader-c1-1/800/1200",
+        "https://picsum.photos/seed/onereader-c1-2/800/1200",
+        "https://picsum.photos/seed/onereader-c1-3/800/1200"
+      ],
+      "body": "漫画页纵向连续阅读：图片宽度铺满屏幕，页与页之间留 8 的间距。\n\n真实的漫画阅读器会做预加载、裁边、双页模式，这里保持最小可用版本，方便你在此基础上扩展。",
+      "tags": [
+        "漫画",
+        "连续阅读"
+      ]
+    },
+    "v4": {
+      "item": {
+        "id": "v4",
+        "title": "影视：三集示例连载",
+        "summary": "剧集列表 + 续播 / 下载，对齐 iOS 版影视详情。",
+        "cover_url": "https://picsum.photos/seed/onereader-v4/800/500",
+        "category": "影视",
+        "kind": "video",
+        "duration": "3 集"
+      },
+      "episodes": [
+        {
+          "title": "第 1 集 · 开场",
+          "media_url": "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
+          "duration": "0:07"
+        },
+        {
+          "title": "第 2 集 · 冲突",
+          "media_url": "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
+          "duration": "0:07"
+        },
+        {
+          "title": "第 3 集 · 收尾",
+          "media_url": "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
+          "duration": "0:07"
+        }
+      ],
+      "body": "这条演示影视详情页的「剧集」结构：每集有自己的 media_url，点任意一集直接播放。\n\n续播进度目前按「条目」记，不分集；如果要按集记，把 progress key 里加上集数即可（见 docs/ARCHITECTURE.md 的扩展建议）。\n\n下载按钮会把第一集或 media_url 加入下载队列，四个连接并发分片，下完在「我的 → 下载」里看到。",
+      "tags": [
+        "影视",
+        "剧集",
+        "下载"
       ]
     }
   }

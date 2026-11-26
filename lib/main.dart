@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'core/downloads.dart';
 import 'core/store.dart';
 import 'core/theme.dart';
 import 'ui/home_shell.dart';
@@ -7,6 +8,7 @@ import 'ui/home_shell.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final store = await AppStore.load();
+  await DownloadManager.init();
   runApp(OneReaderApp(store: store));
 }
 
