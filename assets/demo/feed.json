@@ -1,0 +1,142 @@
+{
+  "source": "demo",
+  "items": [
+    {
+      "id": "a1",
+      "title": "从一个空文件夹开始：这个练手项目想证明什么",
+      "summary": "没有私有接口、没有抓包，也能把列表、详情、收藏和播放串起来。",
+      "cover_url": "https://picsum.photos/seed/onereader-a1/800/500",
+      "category": "随笔",
+      "kind": "article",
+      "duration": "3 分钟"
+    },
+    {
+      "id": "v1",
+      "title": "示例视频：蝴蝶（Flutter 官方素材）",
+      "summary": "用来验证 video_player 的初始化、进度条与外部播放器兜底。",
+      "cover_url": "https://picsum.photos/seed/onereader-v1/800/500",
+      "category": "示例",
+      "kind": "video",
+      "duration": "0:07"
+    },
+    {
+      "id": "a2",
+      "title": "可插拔内容源：为什么要把数据层抽出来",
+      "summary": "ContentSource 只有两个方法，换源时界面一行都不用改。",
+      "cover_url": "https://picsum.photos/seed/onereader-a2/800/500",
+      "category": "架构",
+      "kind": "article",
+      "duration": "4 分钟"
+    },
+    {
+      "id": "v2",
+      "title": "示例视频：海边日落（同素材，演示多条目）",
+      "summary": "同一条示例素材，演示列表、收藏与不同封面。",
+      "cover_url": "https://picsum.photos/seed/onereader-v2/800/500",
+      "category": "示例",
+      "kind": "video",
+      "duration": "0:07"
+    },
+    {
+      "id": "au1",
+      "title": "示例电台：SoundHelix 片段",
+      "summary": "音频条目只显示波形图标与进度，不占用视频画面。",
+      "cover_url": "https://picsum.photos/seed/onereader-au1/800/500",
+      "category": "示例",
+      "kind": "audio",
+      "duration": "6:12"
+    },
+    {
+      "id": "a3",
+      "title": "下一步：把 HTTP 源跑起来",
+      "summary": "用 scripts/mock_server.py 起一个本地 JSON 服务，把网络链路也练一遍。",
+      "cover_url": "https://picsum.photos/seed/onereader-a3/800/500",
+      "category": "教程",
+      "kind": "article",
+      "duration": "5 分钟"
+    }
+  ],
+  "details": {
+    "a1": {
+      "item": {
+        "id": "a1",
+        "title": "从一个空文件夹开始：这个练手项目想证明什么",
+        "summary": "没有私有接口、没有抓包，也能把列表、详情、收藏和播放串起来。",
+        "cover_url": "https://picsum.photos/seed/onereader-a1/800/500",
+        "category": "随笔",
+        "kind": "article",
+        "duration": "3 分钟"
+      },
+      "body": "这个项目刻意不碰任何真实平台的私有接口，也不内置任何付费内容。它想练的是客户端的基本功：\n\n1. 状态管理：一个 AppStore 管住设置、主题、收藏，改动即落本地。\n2. 数据层抽象：ContentSource 接口 + 两个实现（离线示例、HTTP 通用源），换源不改界面。\n3. 错误处理：加载中、失败、空数据三种状态都有对应界面，失败可重试。\n4. 媒体播放：video_player + 外部播放器兜底，播放地址由内容源提供。\n\n如果你在学 Flutter，这个项目适合作为第一个「能装到手机上、有真实交互」的练习：改数据、加页面、接自己的后端，都不需要动别人的服务。",
+      "tags": ["Flutter", "练手", "开源"]
+    },
+    "a2": {
+      "item": {
+        "id": "a2",
+        "title": "可插拔内容源：为什么要把数据层抽出来",
+        "summary": "ContentSource 只有两个方法，换源时界面一行都不用改。",
+        "cover_url": "https://picsum.photos/seed/onereader-a2/800/500",
+        "category": "架构",
+        "kind": "article",
+        "duration": "4 分钟"
+      },
+      "body": "lib/core/source.dart 里只有一个抽象类：\n\nabstract class ContentSource {\n  String get id;\n  String get name;\n  String get description;\n  Future<List<ContentItem>> fetchFeed();\n  Future<ContentDetail> fetchDetail(ContentItem item);\n}\n\n界面只认这个接口，不认具体实现。于是：\n\n- 内置示例源从 assets 读 JSON，断网可用；\n- HTTP 通用源请求本地 mock 服务，练网络与异常处理；\n- 以后接自己的后端，只要新增一个实现类，设置页里自动多一个选项。\n\n这就是「面向接口」最朴素也最实用的收益：业务变了，界面不动。",
+      "tags": ["架构", "接口", "可扩展"]
+    },
+    "a3": {
+      "item": {
+        "id": "a3",
+        "title": "下一步：把 HTTP 源跑起来",
+        "summary": "用 scripts/mock_server.py 起一个本地 JSON 服务，把网络链路也练一遍。",
+        "cover_url": "https://picsum.photos/seed/onereader-a3/800/500",
+        "category": "教程",
+        "kind": "article",
+        "duration": "5 分钟"
+      },
+      "body": "在电脑上进入项目根目录执行：\n\npython3 scripts/mock_server.py --port 8787\n\n它会用 assets/demo/feed.json 提供两个接口：\n\n- GET /feed：列表 + 内嵌详情\n- GET /item/<id>：单条详情\n\n然后在 App 里进入 设置 → 内容源 选「HTTP 通用源」，地址填：\n\n- Android 模拟器：http://10.0.2.2:8787\n- 真机：http://<电脑局域网 IP>:8787\n- 桌面 / Chrome：http://127.0.0.1:8787\n\n保存后回首页刷新，看到的就是从网络读回来的同一批数据。把 mock 服务停掉再刷新，就能看到错误界面和重试按钮——这也是练习的一部分。",
+      "tags": ["教程", "HTTP", "调试"]
+    },
+    "v1": {
+      "item": {
+        "id": "v1",
+        "title": "示例视频：蝴蝶（Flutter 官方素材）",
+        "summary": "用来验证 video_player 的初始化、进度条与外部播放器兜底。",
+        "cover_url": "https://picsum.photos/seed/onereader-v1/800/500",
+        "category": "示例",
+        "kind": "video",
+        "duration": "0:07"
+      },
+      "body": "这段视频来自 Flutter 官方文档的示例素材，可以自由用于测试播放器。\n\n播放页做了三件事：\n\n1. 初始化失败时显示错误原因，而不是白屏；\n2. 播放器不可用时提供「用外部播放器打开」兜底；\n3. 进度条与播放/暂停只监听 controller，不额外维护状态。\n\n换成你自己的视频地址，只要内容源的详情里给出 media_url。",
+      "media_url": "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
+      "tags": ["视频", "video_player"]
+    },
+    "v2": {
+      "item": {
+        "id": "v2",
+        "title": "示例视频：海边日落（同素材，演示多条目）",
+        "summary": "同一条示例素材，演示列表、收藏与不同封面。",
+        "cover_url": "https://picsum.photos/seed/onereader-v2/800/500",
+        "category": "示例",
+        "kind": "video",
+        "duration": "0:07"
+      },
+      "body": "这条只是为了演示「多条视频共用同一个素材」时列表、收藏、播放互不干扰。\n\n收藏按「内容源 + 条目 id」存，所以不同源、不同条目不会互相覆盖。",
+      "media_url": "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
+      "tags": ["视频", "收藏"]
+    },
+    "au1": {
+      "item": {
+        "id": "au1",
+        "title": "示例电台：SoundHelix 片段",
+        "summary": "音频条目只显示波形图标与进度，不占用视频画面。",
+        "cover_url": "https://picsum.photos/seed/onereader-au1/800/500",
+        "category": "示例",
+        "kind": "audio",
+        "duration": "6:12"
+      },
+      "body": "音频和视频共用同一个播放器，只是不显示画面。\n\n想换成你自己的音频源，只要在详情里给出 media_url（mp3 / aac 均可，取决于平台解码支持）。",
+      "media_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      "tags": ["电台", "音频"]
+    }
+  }
+}
