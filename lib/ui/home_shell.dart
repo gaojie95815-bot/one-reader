@@ -4,11 +4,12 @@ import '../core/source.dart';
 import '../core/store.dart';
 import '../sources/demo_source.dart';
 import '../sources/http_json_source.dart';
-import 'favorites_page.dart';
+import 'discover_page.dart';
 import 'home_page.dart';
-import 'settings_page.dart';
+import 'profile_page.dart';
 
-/// 首页外壳：底部三个页签 + 根据设置构建内容源。
+/// 首页外壳：顶部三个页签（首页 / 发现 / 我的），
+/// 对应 iOS 版的「首页 - 发现 - 我的」结构。
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key, required this.store});
 
@@ -49,8 +50,14 @@ class _HomeShellState extends State<HomeShell> {
                 store: widget.store,
                 source: source,
               ),
-              FavoritesPage(store: widget.store, sources: _sources),
-              SettingsPage(store: widget.store, sources: _sources),
+              DiscoverPage(
+                key: ValueKey(
+                  'discover-${source.id}-${widget.store.httpBaseUrl}',
+                ),
+                store: widget.store,
+                source: source,
+              ),
+              ProfilePage(store: widget.store, sources: _sources),
             ],
           ),
           bottomNavigationBar: NavigationBar(
@@ -63,14 +70,14 @@ class _HomeShellState extends State<HomeShell> {
                 label: '首页',
               ),
               NavigationDestination(
-                icon: Icon(Icons.favorite_border),
-                selectedIcon: Icon(Icons.favorite),
-                label: '收藏',
+                icon: Icon(Icons.explore_outlined),
+                selectedIcon: Icon(Icons.explore),
+                label: '发现',
               ),
               NavigationDestination(
-                icon: Icon(Icons.settings_outlined),
-                selectedIcon: Icon(Icons.settings),
-                label: '设置',
+                icon: Icon(Icons.person_outline),
+                selectedIcon: Icon(Icons.person),
+                label: '我的',
               ),
             ],
           ),

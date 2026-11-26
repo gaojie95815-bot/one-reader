@@ -1,20 +1,30 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
 /// 播放页：视频用 video_player 画在页面上，音频只显示封面与进度。
 /// 播放地址由内容源给出，本项目不内置任何第三方付费资源。
+///
+/// 会把进度回报给上层（用于「继续观看」），并从上次位置续播。
 class PlayerPage extends StatefulWidget {
   const PlayerPage({
     super.key,
     required this.title,
     required this.mediaUrl,
     required this.isAudio,
+    this.initialPosition = Duration.zero,
+    this.onProgress,
   });
 
   final String title;
   final String mediaUrl;
   final bool isAudio;
+  final Duration initialPosition;
+
+  /// 每 4 秒回报一次进度，暂停与退出时也会回报。
+  final void Function(Duration position, Duration duration)? onProgress;
 
   @override
   State<PlayerPage> createState() => _PlayerPageState();
@@ -23,6 +33,7 @@ class PlayerPage extends StatefulWidget {
 class _PlayerPageState extends State<PlayerPage> {
   VideoPlayerController? _controller;
   String? _error;
+  Timer? _ticker;
 
   @override
   void initState() {
@@ -38,16 +49,31 @@ class _PlayerPageState extends State<PlayerPage> {
     try {
       await controller.initialize();
       if (!mounted) return;
+      if (widget.initialPosition > Duration.zero) {
+        await controller.seekTo(widget.initialPosition);
+      }
       setState(() {});
       await controller.play();
+      _ticker = Timer.periodic(const Duration(seconds: 4), (_) => _report());
     } catch (error) {
       if (!mounted) return;
       setState(() => _error = '$error');
     }
   }
 
+  void _report() {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) return;
+    widget.onProgress?.call(
+      controller.value.position,
+      controller.value.duration,
+    );
+  }
+
   @override
   void dispose() {
+    _ticker?.cancel();
+    _report();
     _controller?.dispose();
     super.dispose();
   }
@@ -110,7 +136,7 @@ class _PlayerPageState extends State<PlayerPage> {
                       child: Icon(Icons.graphic_eq, size: 72),
                     ),
                   const SizedBox(height: 16),
-                  _Controls(controller: controller),
+                  _Controls(controller: controller, onSeekDone: _report),
                 ],
               ),
       ),
@@ -119,9 +145,10 @@ class _PlayerPageState extends State<PlayerPage> {
 }
 
 class _Controls extends StatelessWidget {
-  const _Controls({required this.controller});
+  const _Controls({required this.controller, required this.onSeekDone});
 
   final VideoPlayerController controller;
+  final VoidCallback onSeekDone;
 
   @override
   Widget build(BuildContext context) {
@@ -143,6 +170,7 @@ class _Controls extends StatelessWidget {
                   : duration.inMilliseconds.toDouble(),
               onChanged: (next) =>
                   controller.seekTo(Duration(milliseconds: next.round())),
+              onChangeEnd: (_) => onSeekDone(),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -154,6 +182,7 @@ class _Controls extends StatelessWidget {
                   onPressed: () {
                     if (value.isPlaying) {
                       controller.pause();
+                      onSeekDone();
                     } else {
                       controller.play();
                     }

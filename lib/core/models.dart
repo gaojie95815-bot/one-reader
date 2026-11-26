@@ -144,3 +144,57 @@ class FeedPayload {
   factory FeedPayload.decode(String rawText) =>
       FeedPayload.fromJson(jsonDecode(rawText) as Map<String, dynamic>);
 }
+
+/// 播放进度：驱动「继续观看」与「观看历史」，纯本地数据。
+class PlayProgress {
+  const PlayProgress({
+    required this.sourceId,
+    required this.item,
+    required this.positionMs,
+    required this.durationMs,
+    required this.updatedAt,
+  });
+
+  final String sourceId;
+  final ContentItem item;
+  final int positionMs;
+  final int durationMs;
+
+  /// 毫秒时间戳，用来排序。
+  final int updatedAt;
+
+  String get key => '$sourceId/${item.id}';
+
+  double get fraction {
+    if (durationMs <= 0) return 0;
+    return (positionMs / durationMs).clamp(0.0, 1.0);
+  }
+
+  /// 看到 97% 以上就算看完，不再出现在「继续观看」里。
+  bool get finished => durationMs > 0 && fraction >= 0.97;
+
+  Duration get position => Duration(milliseconds: positionMs);
+
+  factory PlayProgress.fromJson(Map<String, dynamic> json) {
+    final rawItem = json['item'];
+    return PlayProgress(
+      sourceId: (json['source_id'] as String?) ?? 'demo',
+      item: ContentItem.fromJson(
+        rawItem is Map<Object?, Object?>
+            ? rawItem.cast<String, dynamic>()
+            : const <String, dynamic>{},
+      ),
+      positionMs: (json['position_ms'] as num?)?.toInt() ?? 0,
+      durationMs: (json['duration_ms'] as num?)?.toInt() ?? 0,
+      updatedAt: (json['updated_at'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'source_id': sourceId,
+    'item': item.toJson(),
+    'position_ms': positionMs,
+    'duration_ms': durationMs,
+    'updated_at': updatedAt,
+  };
+}

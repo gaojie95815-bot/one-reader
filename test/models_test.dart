@@ -19,6 +19,8 @@ const _sample = '''
 ''';
 
 void main() {
+  _playProgressTests();
+
   test('解析列表与详情', () {
     final payload = FeedPayload.decode(_sample);
     expect(payload.sourceName, 'demo');
@@ -56,5 +58,50 @@ void main() {
     expect(restored.coverUrl, item.coverUrl);
     expect(restored.kind, ContentKind.video);
     expect(restored.durationLabel, '1:00');
+  });
+}
+
+void _playProgressTests() {
+  test('PlayProgress 进度与完成判定', () {
+    const item = ContentItem(id: 'v1', title: '视频');
+    final halfway = PlayProgress(
+      sourceId: 'demo',
+      item: item,
+      positionMs: 30000,
+      durationMs: 60000,
+      updatedAt: 1,
+    );
+    expect(halfway.key, 'demo/v1');
+    expect(halfway.fraction, closeTo(0.5, 0.001));
+    expect(halfway.finished, isFalse);
+
+    final almostDone = PlayProgress(
+      sourceId: 'demo',
+      item: item,
+      positionMs: 59000,
+      durationMs: 60000,
+      updatedAt: 2,
+    );
+    expect(almostDone.finished, isTrue);
+
+    final restored = PlayProgress.fromJson(
+      jsonDecode(jsonEncode(almostDone.toJson())) as Map<String, dynamic>,
+    );
+    expect(restored.positionMs, 59000);
+    expect(restored.durationMs, 60000);
+    expect(restored.sourceId, 'demo');
+  });
+
+  test('duration 为 0 时进度为 0', () {
+    const item = ContentItem(id: 'v2', title: '视频');
+    final entry = PlayProgress(
+      sourceId: 'demo',
+      item: item,
+      positionMs: 1000,
+      durationMs: 0,
+      updatedAt: 0,
+    );
+    expect(entry.fraction, 0);
+    expect(entry.finished, isFalse);
   });
 }

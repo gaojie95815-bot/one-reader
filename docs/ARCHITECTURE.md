@@ -17,12 +17,13 @@ UI (lib/ui)
 
 ## 数据流
 
-1. `main()` 先 `await AppStore.load()`，把设置读回来再建界面，避免首帧闪烁；
-2. `HomeShell` 根据设置的 `sourceId` 构建内容源列表，取当前源；
-3. `HomePage` 在 `initState` 里 `fetchFeed()`，`FutureBuilder` 渲染加载/失败/空数据；
-4. 点条目进 `DetailPage`，`fetchDetail(item)` 拿正文与 `media_url`；
-5. 有媒体地址就进 `PlayerPage`，`video_player` 初始化失败时提供外部播放器兜底；
-6. 收藏按 `sourceId/itemId` 存，不同源的同 id 不会互相覆盖。
+1. `main()` 先 `await AppStore.load()`，把设置、收藏、播放进度读回来再建界面，避免首帧闪烁；
+2. `HomeShell` 根据设置的 `sourceId` 构建内容源列表，取当前源；三个页签分别是首页、发现、我的；
+3. `HomePage` 在 `initState` 里 `fetchFeed()`，`FutureBuilder` 渲染加载/失败/空数据；顶部「继续观看」来自 `AppStore.continueWatching`；
+4. 点条目进 `DetailPage`，`fetchDetail(item)` 拿正文与 `media_url`；列表页把同分类条目作为 `related` 传进来，渲染「相关推荐」；
+5. 有媒体地址就进 `PlayerPage`，从 `AppStore.progressFor()` 续播，每 4 秒/暂停/退出时回报进度；
+6. `AppStore.saveProgress()` 过滤掉不足 3 秒的记录，看到 97% 以上标记为看完（从继续观看消失，仍留在历史）；
+7. 收藏按 `sourceId/itemId` 存，不同源的同 id 不会互相覆盖。
 
 ## 为什么内容源要抽成接口
 
@@ -43,9 +44,9 @@ UI (lib/ui)
 
 - 没有缓存层：每次进页面都重新请求；
 - 没有分页：列表一次全量返回；
-- 没有播放进度记忆；
+- 继续观看只按最近观看排序，没有「跨设备同步」；
 - 主题只有一套 seed 色；
-- 测试只覆盖模型层。
+- 测试只覆盖模型层与进度判定。
 
 ## 目录约定
 

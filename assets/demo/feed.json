@@ -54,6 +54,24 @@
       "category": "教程",
       "kind": "article",
       "duration": "5 分钟"
+    },
+    {
+      "id": "a4",
+      "title": "阅读：为什么我更愿意把数据放在本地",
+      "summary": "收藏和播放进度只存 shared_preferences，不上传、不依赖账号。",
+      "cover_url": "https://picsum.photos/seed/onereader-a4/800/500",
+      "category": "阅读",
+      "kind": "article",
+      "duration": "5 分钟"
+    },
+    {
+      "id": "v3",
+      "title": "示例视频：继续观看与历史实测",
+      "summary": "看完一半退出，首页继续观看会出现它；看完 97% 后从继续观看消失。",
+      "cover_url": "https://picsum.photos/seed/onereader-v3/800/500",
+      "category": "示例",
+      "kind": "video",
+      "duration": "0:07"
     }
   ],
   "details": {
@@ -68,7 +86,11 @@
         "duration": "3 分钟"
       },
       "body": "这个项目刻意不碰任何真实平台的私有接口，也不内置任何付费内容。它想练的是客户端的基本功：\n\n1. 状态管理：一个 AppStore 管住设置、主题、收藏，改动即落本地。\n2. 数据层抽象：ContentSource 接口 + 两个实现（离线示例、HTTP 通用源），换源不改界面。\n3. 错误处理：加载中、失败、空数据三种状态都有对应界面，失败可重试。\n4. 媒体播放：video_player + 外部播放器兜底，播放地址由内容源提供。\n\n如果你在学 Flutter，这个项目适合作为第一个「能装到手机上、有真实交互」的练习：改数据、加页面、接自己的后端，都不需要动别人的服务。",
-      "tags": ["Flutter", "练手", "开源"]
+      "tags": [
+        "Flutter",
+        "练手",
+        "开源"
+      ]
     },
     "a2": {
       "item": {
@@ -81,7 +103,11 @@
         "duration": "4 分钟"
       },
       "body": "lib/core/source.dart 里只有一个抽象类：\n\nabstract class ContentSource {\n  String get id;\n  String get name;\n  String get description;\n  Future<List<ContentItem>> fetchFeed();\n  Future<ContentDetail> fetchDetail(ContentItem item);\n}\n\n界面只认这个接口，不认具体实现。于是：\n\n- 内置示例源从 assets 读 JSON，断网可用；\n- HTTP 通用源请求本地 mock 服务，练网络与异常处理；\n- 以后接自己的后端，只要新增一个实现类，设置页里自动多一个选项。\n\n这就是「面向接口」最朴素也最实用的收益：业务变了，界面不动。",
-      "tags": ["架构", "接口", "可扩展"]
+      "tags": [
+        "架构",
+        "接口",
+        "可扩展"
+      ]
     },
     "a3": {
       "item": {
@@ -94,7 +120,11 @@
         "duration": "5 分钟"
       },
       "body": "在电脑上进入项目根目录执行：\n\npython3 scripts/mock_server.py --port 8787\n\n它会用 assets/demo/feed.json 提供两个接口：\n\n- GET /feed：列表 + 内嵌详情\n- GET /item/<id>：单条详情\n\n然后在 App 里进入 设置 → 内容源 选「HTTP 通用源」，地址填：\n\n- Android 模拟器：http://10.0.2.2:8787\n- 真机：http://<电脑局域网 IP>:8787\n- 桌面 / Chrome：http://127.0.0.1:8787\n\n保存后回首页刷新，看到的就是从网络读回来的同一批数据。把 mock 服务停掉再刷新，就能看到错误界面和重试按钮——这也是练习的一部分。",
-      "tags": ["教程", "HTTP", "调试"]
+      "tags": [
+        "教程",
+        "HTTP",
+        "调试"
+      ]
     },
     "v1": {
       "item": {
@@ -108,7 +138,10 @@
       },
       "body": "这段视频来自 Flutter 官方文档的示例素材，可以自由用于测试播放器。\n\n播放页做了三件事：\n\n1. 初始化失败时显示错误原因，而不是白屏；\n2. 播放器不可用时提供「用外部播放器打开」兜底；\n3. 进度条与播放/暂停只监听 controller，不额外维护状态。\n\n换成你自己的视频地址，只要内容源的详情里给出 media_url。",
       "media_url": "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
-      "tags": ["视频", "video_player"]
+      "tags": [
+        "视频",
+        "video_player"
+      ]
     },
     "v2": {
       "item": {
@@ -122,7 +155,10 @@
       },
       "body": "这条只是为了演示「多条视频共用同一个素材」时列表、收藏、播放互不干扰。\n\n收藏按「内容源 + 条目 id」存，所以不同源、不同条目不会互相覆盖。",
       "media_url": "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
-      "tags": ["视频", "收藏"]
+      "tags": [
+        "视频",
+        "收藏"
+      ]
     },
     "au1": {
       "item": {
@@ -136,7 +172,45 @@
       },
       "body": "音频和视频共用同一个播放器，只是不显示画面。\n\n想换成你自己的音频源，只要在详情里给出 media_url（mp3 / aac 均可，取决于平台解码支持）。",
       "media_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-      "tags": ["电台", "音频"]
+      "tags": [
+        "电台",
+        "音频"
+      ]
+    },
+    "a4": {
+      "item": {
+        "id": "a4",
+        "title": "阅读：为什么我更愿意把数据放在本地",
+        "summary": "收藏和播放进度只存 shared_preferences，不上传、不依赖账号。",
+        "cover_url": "https://picsum.photos/seed/onereader-a4/800/500",
+        "category": "阅读",
+        "kind": "article",
+        "duration": "5 分钟"
+      },
+      "body": "这个项目的本地状态只有三类：设置、收藏、播放进度。它们都存在 shared_preferences 的 JSON 里，加载时一次性读回内存，改动后立即落盘。\n\n于是：\n\n- 不需要登录，没有账号体系；\n- 换设备就没了，但也不会被上传；\n- 数据损坏时直接按空处理，不影响启动。\n\n对练手项目来说，这种「无服务端」的设计能让你把精力放在界面与交互上，而不是先搭一套后端。",
+      "tags": [
+        "本地",
+        "状态",
+        "shared_preferences"
+      ]
+    },
+    "v3": {
+      "item": {
+        "id": "v3",
+        "title": "示例视频：继续观看与历史实测",
+        "summary": "看完一半退出，首页继续观看会出现它；看完 97% 后从继续观看消失。",
+        "cover_url": "https://picsum.photos/seed/onereader-v3/800/500",
+        "category": "示例",
+        "kind": "video",
+        "duration": "0:07"
+      },
+      "body": "验证步骤：\n\n1. 打开这条视频，播到 10 秒左右退出；\n2. 回首页，顶部「继续观看」出现这条；\n3. 再点进去，播放器从上次位置续播；\n4. 播到 97% 以上再退出，它从「继续观看」消失，但还在「我的 → 观看历史」里。\n\n这套逻辑全部在 AppStore 里，页面只负责展示。",
+      "media_url": "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
+      "tags": [
+        "继续观看",
+        "历史",
+        "进度"
+      ]
     }
   }
 }
