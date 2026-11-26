@@ -301,7 +301,7 @@ class DownloadManager extends ChangeNotifier {
     // 服务器忽略 Range 直接回 200 时，只有单段（整文件）可以接受。
     if (response.statusCode == 200 &&
         (range.start != 0 || range.length != task.totalBytes)) {
-      throw const HttpException('服务器不支持分段下载');
+      throw HttpException('服务器不支持分段下载');
     }
     if (response.statusCode != 206 && response.statusCode != 200) {
       throw HttpException('分片请求失败：HTTP ${response.statusCode}');
