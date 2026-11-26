@@ -25,7 +25,10 @@ jobs:
         run: flutter --version
 
       - name: Generate android shell
-        run: flutter create . --platforms=android
+        # flutter create 会顺手生成一个引用 MyApp 的模板测试（与本项目不符），建完就删掉
+        run: |
+          flutter create . --platforms=android
+          rm -f test/widget_test.dart
 
       - name: Install dependencies
         run: flutter pub get
