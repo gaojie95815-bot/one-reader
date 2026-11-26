@@ -81,7 +81,7 @@ docs/                       # 架构、扩展、画中画说明
 
 ## 快速开始
 
-要求：Flutter 3.24+（Dart 3.4+）。
+要求：Flutter 3.24+（Dart 3.4+）。**没有电脑也能装**：用 GitHub Actions 云构建，见 [docs/BUILD-WITHOUT-PC.md](docs/BUILD-WITHOUT-PC.md)。
 
 ```bash
 git clone <你的仓库地址> one-reader
@@ -169,7 +169,7 @@ flutter test
 - [ ] 离线缓存（列表 + 封面）
 - [ ] 详情页 Markdown 渲染
 - [ ] 桌面 / 平板适配
-- [ ] CI：`flutter analyze` + `flutter test`
+- [x] CI：GitHub Actions 自动构建 APK（`flutter analyze` + `test` + `build apk`，见 [docs/BUILD-WITHOUT-PC.md](docs/BUILD-WITHOUT-PC.md)）
 
 ## 合规说明
 
