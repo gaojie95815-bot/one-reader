@@ -191,7 +191,7 @@ class DownloadManager extends ChangeNotifier {
   }
 
   Future<void> remove(String id) async {
-    final task = _tasks.firstWhere((t) => t.id == id, orElse: _missing);
+    final task = _tasks.firstWhere((t) => t.id == id, orElse: () => _missing);
     if (identical(task, _missing)) return;
     task._cancelRequested = true;
     await _cleanupParts(task);
